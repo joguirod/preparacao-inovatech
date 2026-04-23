@@ -1,3 +1,4 @@
+import { UnauthorizedException } from "../../domain/exceptions/app-exceptions";
 import { jwtProvider, JwtProvider } from "../../infra/auth/jwt.provider";
 import { passwordProvider, PasswordProvider } from "../../infra/auth/password.provider";
 import { LoginDto } from "../dto/auth.dto";
@@ -19,10 +20,10 @@ export class AuthService {
 
     async login(data: LoginDto) {
         const user = await this.users.findByEmail(data.email);
-        if (!user) throw new Error("Incorrect email/password");
+        if (!user) throw new UnauthorizedException("Incorrect email/password");
 
         const passwordMatch = this.hashProvider.compare(data.password, user.password)
-        if (!passwordMatch) throw new Error("Incorrect email/password");
+        if (!passwordMatch) throw new UnauthorizedException("Incorrect email/password");
 
         const token = this.tokenProvider.generate({
             userId: user.id,

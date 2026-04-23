@@ -1,3 +1,4 @@
+import { NotFoundException } from "../../domain/exceptions/app-exceptions";
 import { taskRepository, TaskRepository } from "../../infra/repositories/task.repository";
 import { userRepository, UserRepository } from "../../infra/repositories/user.repository";
 import { CreateTaskDto, TaskResponseDto } from "../dto/task.dto";
@@ -10,7 +11,7 @@ export class TaskService {
 
     async create(data: CreateTaskDto): Promise<TaskResponseDto> {
         const creator = await this.userRepo.findById(data.creatorId);
-        if (!creator) throw new Error(`User with id ${data.creatorId} not found`)
+        if (!creator) throw new NotFoundException(`User with id ${data.creatorId} not found`)
 
         const task = await this.taskRepo.create({
             title: data.title,
@@ -34,7 +35,7 @@ export class TaskService {
     async findByTaskId(taskId: string): Promise<TaskResponseDto | null> {
         const task = await this.taskRepo.findById(taskId);
         if (!task) {
-            throw new Error(`Task with id ${taskId} not found`)
+            throw new NotFoundException(`Task with id ${taskId} not found`)
         }
 
         return new TaskResponseDto(task.id, task.title, task.description, task.creator.id, task.createdAt);
@@ -43,7 +44,7 @@ export class TaskService {
     async delete(taskId: string) {
         const task = await this.taskRepo.findById(taskId);
         if (!task) {
-            throw new Error(`Task with id ${taskId} not found`);
+            throw new NotFoundException(`Task with id ${taskId} not found`);
         }
         
         this.taskRepo.delete(task);

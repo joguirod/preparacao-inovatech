@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtProvider } from "../../infra/auth/jwt.provider";
+import { ForbiddenException, UnauthorizedException } from "../../domain/exceptions/app-exceptions";
 
 declare global {
     namespace Express {
@@ -13,7 +14,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     try {
         const header = req.headers.authorization;
         if (!header || !header.startsWith("Bearer ")) {
-            throw new Error("Authorization Token invalid or not found");
+            throw new UnauthorizedException("Authorization Token invalid or not found");
         }
 
         const token = header.split(" ")[1];
@@ -22,6 +23,6 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
         next();
     } catch (err) {
-        next(new Error("Invalid or expired token"));
+        next(new UnauthorizedException("Invalid or expired token"));
     }
 }
