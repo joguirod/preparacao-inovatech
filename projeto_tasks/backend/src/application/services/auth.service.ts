@@ -27,7 +27,8 @@ export class AuthService {
 
         const token = this.tokenProvider.generate({
             userId: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role,
         });
 
         return { token };

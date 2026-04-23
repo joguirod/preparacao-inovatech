@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import { Role } from "../../domain/entities/enums/role";
 
 const SECRET = "inovatech-prova-2026"
 const EXPIRES_IN = "15m"
@@ -6,6 +7,7 @@ const EXPIRES_IN = "15m"
 export interface JwtPayload {
     userId: string;
     email: string;
+    role: Role;
 }
 
 export class JwtProvider {

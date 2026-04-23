@@ -1,3 +1,4 @@
+import { ConflictException, NotFoundException } from "../../domain/exceptions/app-exceptions";
 import { passwordProvider, PasswordProvider } from "../../infra/auth/password.provider";
 import { AppDataSource } from "../../infra/database/data-source";
 import { userRepository, UserRepository } from "../../infra/repositories/user.repository";
@@ -12,13 +13,14 @@ export class UserService {
     async create(data: CreateUserDto) {
         const exists = await this.findByEmail(data.email);
         if (exists) {
-            throw new Error("Email already used");
+            throw new ConflictException("Email already used");
         }
 
         const user = await this.repo.create({
             name: data.name,
-            email: data.email, 
-            password: this.hashProvider.hash(data.password)
+            email: data.email,
+            password: this.hashProvider.hash(data.password),
+            role: data.role,
         });
 
         const { password, ...safeUser } = user;
@@ -32,17 +34,19 @@ export class UserService {
             id: user.id,
             name: user.name,
             email: user.email,
+            role: user.role,
             createdAt: user.createdAt
         }));
     }
 
     async findById(id: string): Promise<SimpleUserDto> {
         const user = await this.repo.findById(id)
-        if (!user) throw new Error(`User with id ${id} not found`);
+        if (!user) throw new NotFoundException(`User with id ${id} not found`);
         return new SimpleUserDto({
             id: user.id,
             name: user.name,
             email: user.email,
+            role: user.role,
             createdAt: user.createdAt
         });
     }
@@ -54,7 +58,7 @@ export class UserService {
 
     async delete(id: string) {
         const user = await this.repo.findById(id);
-        if (!user) throw new Error(`User with ${id} not found`);
+        if (!user) throw new NotFoundException(`User with ${id} not found`);
         await this.repo.delete(user);
     }
 };

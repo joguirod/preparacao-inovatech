@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtProvider } from "../../infra/auth/jwt.provider";
 import { ForbiddenException, UnauthorizedException } from "../../domain/exceptions/app-exceptions";
+import { Role } from "../../domain/entities/enums/role";
 
 declare global {
     namespace Express {
         interface Request {
-            user?: { userId: string, email: string };
+            user?: { userId: string, email: string, role: Role };
         }
     }
 }

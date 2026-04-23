@@ -18,7 +18,7 @@ export class UnauthorizedException extends AppException {
 
 export class ForbiddenException extends AppException {
     constructor(message = "User not allowed") {
-        super(401, message);
+        super(403, message);
     }
 }
 
