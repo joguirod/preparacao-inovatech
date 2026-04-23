@@ -5,6 +5,7 @@ import { AppDataSource } from "./infra/database/data-source";
 import { authRoute } from "./presentation/routes/auth.route";
 import { userRoute } from "./presentation/routes/user.route";
 import { taskRoute } from "./presentation/routes/task.route";
+import { authMiddleware } from "./presentation/middlewares/auth.middleware";
 
 const app = express();
 
@@ -16,8 +17,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoute);
-app.use("/user", userRoute);
-app.use("/task", taskRoute)
+app.use("/user", authMiddleware, userRoute);
+app.use("/task", authMiddleware, taskRoute)
 
 AppDataSource.initialize()
 .then(() => {
